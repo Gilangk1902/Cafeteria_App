@@ -7,7 +7,7 @@ public class Session {
     private static String role;
 
     public static void InitUser(){
-        user = new User(null,null,null);
+        user = new User(null,null,null,null);
     }
 
     public static void Login(User newUser, String _role){
@@ -18,7 +18,7 @@ public class Session {
     }
 
     public static void Logout(){
-        user = new User(null, null, null);
+        user = new User(null,null, null, null);
         role = "";
     }
 

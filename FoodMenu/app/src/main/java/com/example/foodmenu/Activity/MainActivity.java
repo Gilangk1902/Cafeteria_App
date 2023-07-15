@@ -58,6 +58,7 @@ public class MainActivity extends AppCompatActivity {
     private void Listeners(){
         floatingActionButton.setOnClickListener(v -> {
             Intent intent = new Intent(MainActivity.this, FoodActivity.class);
+            intent.putExtra(FoodActivity.ADD_KEY, "");
             startActivity(intent);
         });
     }

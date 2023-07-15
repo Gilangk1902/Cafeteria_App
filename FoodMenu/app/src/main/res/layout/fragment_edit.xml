@@ -21,7 +21,7 @@
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toTopOf="parent"
                 android:layout_margin="10dp"/>
-<!--            Name-->
+            <!--            Name-->
             <TextView
                 android:id="@+id/name"
                 android:layout_width="wrap_content"
@@ -45,7 +45,7 @@
                     android:background="@color/white"
                     android:padding="0dp"/>
             </com.google.android.material.textfield.TextInputLayout>
-<!--            price-->
+            <!--            price-->
             <TextView
                 android:id="@+id/price_TextView"
                 android:layout_width="wrap_content"
@@ -69,7 +69,7 @@
                     android:background="@color/white"
                     android:padding="0dp"/>
             </com.google.android.material.textfield.TextInputLayout>
-<!--            image-->
+            <!--            image-->
             <TextView
                 android:id="@+id/imagUrl_TextView"
                 android:layout_width="wrap_content"
@@ -96,12 +96,12 @@
                 app:layout_constraintTop_toTopOf="@id/image_ImageView"
                 app:layout_constraintBottom_toBottomOf="@id/image_ImageView"
                 android:layout_margin="10dp"/>
-<!--            Buttons-->
+            <!--            Buttons-->
             <Button
-                android:id="@+id/add_Button"
+                android:id="@+id/update_Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:text="Add"
+                android:text="Update"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintTop_toBottomOf="@id/image_ImageView"
                 android:layout_margin="10dp"/>
@@ -110,9 +110,9 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="cancel"
-                app:layout_constraintTop_toTopOf="@id/add_Button"
-                app:layout_constraintStart_toEndOf="@id/add_Button"
-                app:layout_constraintBottom_toBottomOf="@id/add_Button"
+                app:layout_constraintTop_toTopOf="@id/update_Button"
+                app:layout_constraintStart_toEndOf="@id/update_Button"
+                app:layout_constraintBottom_toBottomOf="@id/update_Button"
                 android:layout_marginLeft="10dp"/>
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>

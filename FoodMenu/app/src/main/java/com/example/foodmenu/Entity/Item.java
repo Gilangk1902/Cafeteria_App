@@ -1,6 +1,8 @@
 package com.example.foodmenu.Entity;
 
-public class Item {
+import java.io.Serializable;
+
+public class Item implements Serializable {
     private String id;
     private String name;
     private String price;

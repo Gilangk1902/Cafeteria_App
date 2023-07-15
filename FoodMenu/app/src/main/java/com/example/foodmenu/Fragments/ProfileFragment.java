@@ -72,18 +72,15 @@ public class ProfileFragment extends Fragment {
     }
 
     private void Listeners(){
-        logout_Button.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                Session.Logout();
-                Intent intent = new Intent(getContext(), MainActivity.class);
-                startActivity(intent);
-            }
+        logout_Button.setOnClickListener(v -> {
+            Session.Logout();
+            Intent intent = new Intent(getContext(), MainActivity.class);
+            startActivity(intent);
         });
     }
 
     private void BindData(){
-        name.setText(Session.getUser().getName());
-        email.setText(Session.getUser().getEmail());
+        name.setText("Name : " + Session.getUser().getName());
+        email.setText("Email : " + Session.getUser().getEmail());
     }
 }

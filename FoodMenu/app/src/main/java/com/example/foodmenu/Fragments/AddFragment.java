@@ -22,14 +22,12 @@ import com.example.foodmenu.Entity.Food;
 import com.example.foodmenu.Factory.FoodFactory;
 import com.example.foodmenu.R;
 import com.example.foodmenu.Utils.ValidatorUtils;
-import com.google.android.gms.tasks.OnFailureListener;
-import com.google.android.gms.tasks.OnSuccessListener;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
-public class AddFoodFragment extends Fragment {
+public class AddFragment extends Fragment {
 
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
@@ -44,12 +42,12 @@ public class AddFoodFragment extends Fragment {
 
     private Uri image_Uri;
 
-    public AddFoodFragment() {
+    public AddFragment() {
         // Required empty public constructor
     }
 
-    public static AddFoodFragment newInstance(String param1, String param2) {
-        AddFoodFragment fragment = new AddFoodFragment();
+    public static AddFragment newInstance(String param1, String param2) {
+        AddFragment fragment = new AddFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -111,31 +109,8 @@ public class AddFoodFragment extends Fragment {
 
     private void AddItem(){
         FoodHandler foodHandler = new FoodHandler();
-
-        if(image_Uri!=null){
-            StorageReference imageRef = foodHandler.getFoodStorageReference()
-                    .child(name_EditText.getText().toString()+".jpg");
-
-            UploadTask uploadTask = imageRef.putFile(image_Uri);
-            uploadTask.addOnSuccessListener(taskSnapshot ->
-            {
-               imageRef.getDownloadUrl().addOnSuccessListener(uri ->
-               {
-                   String image_Url = uri.toString();
-
-                   Food food = FoodFactory.Create(name_EditText.getText().toString(),
-                           price_EditText.getText().toString(),
-                           image_Url);
-
-                   DatabaseReference newFood = foodHandler.getFoodDatabaseReference().child(food.getId());
-                   newFood.child("name").setValue(food.getName());
-                   newFood.child("price").setValue(food.getPrice());
-                   newFood.child("image").setValue(food.getImageUrl());
-               });
-            }).addOnFailureListener(e -> {
-                Toast.makeText(getContext(), "fail", Toast.LENGTH_SHORT).show();
-            });
-        }
+        foodHandler.Add(name_EditText.getText().toString(), price_EditText.getText().toString(),
+                        image_Uri);
     }
 
     private void setImageView_Image(Uri selectedImageUri) {

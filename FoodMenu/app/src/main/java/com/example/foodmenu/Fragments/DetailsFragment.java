@@ -12,26 +12,29 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
 import com.example.foodmenu.App_Start.Session;
 import com.example.foodmenu.Entity.Food;
+import com.example.foodmenu.Entity.Item;
 import com.example.foodmenu.R;
+import com.example.foodmenu.Utils.FragmentUtils;
 
-public class FoodDetailsFragment extends Fragment {
+public class DetailsFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     private String mParam1;
     private String mParam2;
 
-    private Food food;
+    private Item item;
 
     private ImageView item_image;
     private Button buy_button;
     private TextView item_name, item_price;
-    public FoodDetailsFragment(Food _food) {
-        this.food = _food;
+    public DetailsFragment(Item item) {
+        this.item = item;
     }
 
     @Override
@@ -53,6 +56,7 @@ public class FoodDetailsFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         InitViews(view);
+        Listeners();
     }
 
     private void InitViews(View view){
@@ -61,7 +65,7 @@ public class FoodDetailsFragment extends Fragment {
         item_price = view.findViewById(R.id.item_price_TextView);
         buy_button = view.findViewById(R.id.buy_Button);
 
-        if(food!=null){
+        if(item !=null){
             BindData();
         }
 
@@ -73,9 +77,24 @@ public class FoodDetailsFragment extends Fragment {
         }
     }
 
+    private void Listeners(){
+        if(Session.getRole().equals("admin")){
+            buy_button.setOnClickListener(v->{
+                FragmentUtils.ReplaceFragment(getParentFragmentManager(),
+                        R.id.foodActivity_FrameLayout, new EditFragment(item));
+            });
+        }
+        else if(Session.getRole().equals("customer")){
+            buy_button.setOnClickListener(v->{
+                Toast.makeText(getContext(), "Not implemented yet", Toast.LENGTH_SHORT).show();
+                //TODO
+            });
+        }
+    }
+
     private void BindData(){
-        item_name.setText(food.getName());
-        item_price.setText("Rp. "+ food.getPrice());
-        Glide.with(getContext()).load(food.getImageUrl()).into(item_image);
+        item_name.setText(item.getName());
+        item_price.setText("Rp. "+ item.getPrice());
+        Glide.with(getContext()).load(item.getImageUrl()).into(item_image);
     }
 }
