@@ -17,10 +17,15 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.foodmenu.Activity.FoodActivity;
 import com.example.foodmenu.Activity.MainActivity;
+import com.example.foodmenu.DataBaseHandler.DrinkHandler;
 import com.example.foodmenu.DataBaseHandler.FoodHandler;
+import com.example.foodmenu.Entity.Drink;
+import com.example.foodmenu.Entity.Food;
 import com.example.foodmenu.Entity.Item;
 import com.example.foodmenu.R;
+import com.example.foodmenu.Utils.FragmentUtils;
 import com.example.foodmenu.Utils.ValidatorUtils;
 import com.google.android.material.textfield.TextInputEditText;
 import com.google.firebase.database.DatabaseReference;
@@ -82,7 +87,28 @@ public class EditFragment extends Fragment {
 
     private void Listeners(){
         update_Button.setOnClickListener(v -> {
-            //TODO
+            if(item instanceof Food){
+                FoodHandler foodHandler = new FoodHandler();
+                foodHandler.Update(
+                        item.getId(),
+                        name_EditText.getText().toString(),
+                        price_EditText.getText().toString(),
+                        image_Uri
+                );
+                Intent intent = new Intent(getContext(), MainActivity.class);
+                startActivity(intent);
+            }
+            else if(item instanceof Drink){
+                DrinkHandler drinkHandler = new DrinkHandler();
+                drinkHandler.Update(
+                        item.getId(),
+                        name_EditText.getText().toString(),
+                        price_EditText.getText().toString(),
+                        image_Uri
+                );
+                Intent intent = new Intent(getContext(), MainActivity.class);
+                startActivity(intent);
+            }
         });
 
         pick_image_Button.setOnClickListener(v -> {

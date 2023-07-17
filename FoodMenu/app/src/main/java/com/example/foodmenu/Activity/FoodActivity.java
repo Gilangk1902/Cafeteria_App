@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.example.foodmenu.Entity.Food;
+import com.example.foodmenu.Entity.Item;
 import com.example.foodmenu.Fragments.AddFragment;
 import com.example.foodmenu.Fragments.DetailsFragment;
 import com.example.foodmenu.R;
@@ -30,6 +31,10 @@ public class FoodActivity extends AppCompatActivity {
             Intent intent = new Intent(FoodActivity.this, MainActivity.class);
             startActivity(intent);
         }
+        else if(fragment instanceof  DetailsFragment){
+            Intent intent = new Intent(FoodActivity.this, MainActivity.class);
+            startActivity(intent);
+        }
         else{
             super.onBackPressed();
         }
@@ -43,7 +48,7 @@ public class FoodActivity extends AppCompatActivity {
             if(extras.containsKey(DETAIL_KEY)){
                 FragmentUtils.ReplaceFragment(getSupportFragmentManager(),
                         R.id.foodActivity_FrameLayout,
-                        new DetailsFragment((Food)intent.getSerializableExtra(DETAIL_KEY))
+                        new DetailsFragment((Item) intent.getSerializableExtra(DETAIL_KEY))
                 );
             }
             else if(extras.containsKey(ADD_KEY)){

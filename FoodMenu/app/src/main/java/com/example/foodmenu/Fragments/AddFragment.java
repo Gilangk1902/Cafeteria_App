@@ -14,9 +14,11 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.example.foodmenu.Activity.MainActivity;
+import com.example.foodmenu.DataBaseHandler.DrinkHandler;
 import com.example.foodmenu.DataBaseHandler.FoodHandler;
 import com.example.foodmenu.Entity.Food;
 import com.example.foodmenu.Factory.FoodFactory;
@@ -32,6 +34,10 @@ public class AddFragment extends Fragment {
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
     private static final int PICK_IMAGE_REQUEST = 1;
+    private static final int FOOD_CODE = 1;
+    private static final int DRINK_CODE = 2;
+
+    private static int REQUEST_CODE;
 
     private String mParam1;
     private String mParam2;
@@ -41,6 +47,8 @@ public class AddFragment extends Fragment {
     private ImageView image_ImageView;
 
     private Uri image_Uri;
+
+    private TextView food_change_to_TextButton, drink_change_to_TextButton, title;
 
     public AddFragment() {
         // Required empty public constructor
@@ -76,6 +84,8 @@ public class AddFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         InitViews(view);
         Listeners();
+        REQUEST_CODE = FOOD_CODE;
+        title.setText("Add " + "Food");
     }
 
     @Override
@@ -105,12 +115,34 @@ public class AddFragment extends Fragment {
         pick_image_Button.setOnClickListener(v -> {
             openImagePicker();
         });
+
+        food_change_to_TextButton.setOnClickListener(v -> {
+            title.setText("Add Food");
+            REQUEST_CODE = FOOD_CODE;
+        });
+        drink_change_to_TextButton.setOnClickListener(v -> {
+            title.setText("Add Drink");
+            REQUEST_CODE = DRINK_CODE;
+        });
     }
 
     private void AddItem(){
-        FoodHandler foodHandler = new FoodHandler();
-        foodHandler.Add(name_EditText.getText().toString(), price_EditText.getText().toString(),
-                        image_Uri);
+        if(REQUEST_CODE == FOOD_CODE){
+            FoodHandler foodHandler = new FoodHandler();
+            foodHandler.Add(
+                    name_EditText.getText().toString(),
+                    price_EditText.getText().toString(),
+                    image_Uri
+            );
+        }
+        else if(REQUEST_CODE == DRINK_CODE){
+            DrinkHandler drinkHandler = new DrinkHandler();
+            drinkHandler.Add(
+                    name_EditText.getText().toString(),
+                    price_EditText.getText().toString(),
+                    image_Uri
+            );
+        }
     }
 
     private void setImageView_Image(Uri selectedImageUri) {
@@ -125,8 +157,14 @@ public class AddFragment extends Fragment {
     private void InitViews(View view){
         name_EditText = view.findViewById(R.id.name_TextInputEditText);
         price_EditText =  view.findViewById(R.id.price_TextInputEditText);
+
         add_Button = view.findViewById(R.id.add_Button);
         pick_image_Button = view.findViewById(R.id.pick_image_Button);
+        drink_change_to_TextButton = view.findViewById(R.id.change_to_drink_TextButton);
+        food_change_to_TextButton = view.findViewById(R.id.change_to_food_TextButton);
+
         image_ImageView = view.findViewById(R.id.image_ImageView);
+
+        title = view.findViewById(R.id.title);
     }
 }

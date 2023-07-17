@@ -11,11 +11,14 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.TextView;
+import android.widget.Button;
 
+import com.example.foodmenu.DataBaseHandler.DrinkHandler;
 import com.example.foodmenu.DataBaseHandler.FoodHandler;
+import com.example.foodmenu.Entity.Drink;
 import com.example.foodmenu.Entity.Food;
 import com.example.foodmenu.R;
+import com.example.foodmenu.RecyclerViewAdapters.DrinkRecyclerViewAdapter;
 import com.example.foodmenu.RecyclerViewAdapters.FoodRecyclerViewAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -36,10 +39,11 @@ public class ShowAllFragment extends Fragment {
     private String mParam1;
     private String mParam2;
 
-    private TextView page_title;
+    private Button foods_Button, drinks_Button;
 
-    private RecyclerView food_recyclerview;
+    private RecyclerView item_RecyclerView;
     private FoodRecyclerViewAdapter food_recyclerview_adapter;
+    private DrinkRecyclerViewAdapter drink_recyclerview_adapter;
 
 
     public ShowAllFragment() {
@@ -72,15 +76,26 @@ public class ShowAllFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         InitViews(view);
-        BindData_Food_RecyclerView(view);
+        Listeners(view);
+        Bind_FoodData(view);
     }
 
     private void InitViews(View view){
-        page_title = view.findViewById(R.id.showAllTitle_TextView);
-        food_recyclerview = view.findViewById(R.id.food_RecyclerView);
+        foods_Button = view.findViewById(R.id.foods_Button);
+        drinks_Button = view.findViewById(R.id.drinks_Button);
+        item_RecyclerView = view.findViewById(R.id.food_RecyclerView);
     }
 
-    private void BindData_Food_RecyclerView(View view){
+    private void Listeners(View view){
+        foods_Button.setOnClickListener(v -> {
+            Bind_FoodData(view);
+        });
+        drinks_Button.setOnClickListener(v -> {
+            Bind_DrinkData(view);
+        });
+    }
+
+    private void Bind_FoodData(View view){
         FoodHandler foodHandler = new FoodHandler();
         foodHandler.getFoodDatabaseReference().addValueEventListener(new ValueEventListener() {
             @Override
@@ -97,8 +112,36 @@ public class ShowAllFragment extends Fragment {
 
                 food_recyclerview_adapter  = new FoodRecyclerViewAdapter(foods, getContext());
                 GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
-                food_recyclerview.setLayoutManager(gridLayoutManager);
-                food_recyclerview.setAdapter(food_recyclerview_adapter);
+                item_RecyclerView.setLayoutManager(gridLayoutManager);
+                item_RecyclerView.setAdapter(food_recyclerview_adapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    private void Bind_DrinkData(View view){
+        DrinkHandler drinkHandler = new DrinkHandler();
+        drinkHandler.getDrinkDatabaseReference().addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ArrayList<Drink> drinks = new ArrayList<>();
+                for(DataSnapshot drink_snapshot : snapshot.getChildren()){
+                    Drink newDrink = new Drink(drink_snapshot.getKey(),
+                            drink_snapshot.child("name").getValue(String.class),
+                            drink_snapshot.child("price").getValue(String.class),
+                            drink_snapshot.child("image").getValue(String.class));
+
+                    drinks.add(newDrink);
+                }
+
+                drink_recyclerview_adapter  = new DrinkRecyclerViewAdapter(drinks, getContext());
+                GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
+                item_RecyclerView.setLayoutManager(gridLayoutManager);
+                item_RecyclerView.setAdapter(drink_recyclerview_adapter);
             }
 
             @Override

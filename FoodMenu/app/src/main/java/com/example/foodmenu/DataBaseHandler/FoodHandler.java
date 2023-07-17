@@ -9,6 +9,8 @@ import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.storage.StorageReference;
 import com.google.firebase.storage.UploadTask;
 
+import java.util.Map;
+
 public class FoodHandler {
     private DatabaseReference foodDatabaseReference;
     private StorageReference foodStorageReference;
@@ -40,6 +42,31 @@ public class FoodHandler {
             }).addOnFailureListener(e -> {
                 //handle failure
             });
+        }
+    }
+
+    public void Update(String target_id,String name, String price, Uri image_Uri){
+        if(image_Uri!=null){
+            StorageReference imageRef = getFoodStorageReference().child(name+".jpg");
+
+            UploadTask uploadTask = imageRef.putFile(image_Uri);
+            uploadTask.addOnSuccessListener(taskSnapshot -> {
+                imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
+                    String image_Url  = uri.toString();
+
+                    DatabaseReference foodReference = getFoodDatabaseReference().child(target_id);
+                    foodReference.child("name").setValue(name);
+                    foodReference.child("price").setValue(price);
+                    foodReference.child("image").setValue(image_Url);
+                }).addOnFailureListener(e->{
+                    //handle failure
+                });
+            });
+        }
+        else{
+            DatabaseReference foodReference = getFoodDatabaseReference().child(target_id);
+            foodReference.child("name").setValue(name);
+            foodReference.child("price").setValue(price);
         }
     }
 
