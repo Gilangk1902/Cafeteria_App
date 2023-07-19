@@ -1,39 +1,38 @@
 package com.example.foodmenu.Fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
 import androidx.annotation.Nullable;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.TextView;
 
-import com.example.foodmenu.Activity.MainActivity;
 import com.example.foodmenu.App_Start.Session;
+import com.example.foodmenu.DataBaseHandler.CartHandler;
 import com.example.foodmenu.R;
-import com.example.foodmenu.Utils.FragmentUtils;
+import com.example.foodmenu.RecyclerViewAdapters.FoodRecyclerViewAdapter;
 
-public class ProfileFragment extends Fragment {
+public class CartFragment extends Fragment {
+
     private static final String ARG_PARAM1 = "param1";
     private static final String ARG_PARAM2 = "param2";
 
     private String mParam1;
     private String mParam2;
 
-    private TextView name, email;
-    private Button logout_Button, cart_Button;
+    private RecyclerView cart_recyclerView;
 
-    public ProfileFragment() {
+    public CartFragment() {
         // Required empty public constructor
     }
 
-    public static ProfileFragment newInstance(String param1, String param2) {
-        ProfileFragment fragment = new ProfileFragment();
+    public static CartFragment newInstance(String param1, String param2) {
+        CartFragment fragment = new CartFragment();
         Bundle args = new Bundle();
         args.putString(ARG_PARAM1, param1);
         args.putString(ARG_PARAM2, param2);
@@ -54,7 +53,7 @@ public class ProfileFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_profile, container, false);
+        return inflater.inflate(R.layout.fragment_cart, container, false);
     }
 
     @Override
@@ -62,32 +61,18 @@ public class ProfileFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
 
         InitViews(view);
-        Listeners();
-        BindData();
-    }
 
-    private void InitViews(View view){
-        name =  view.findViewById(R.id.user_name_TextView);
-        email = view.findViewById(R.id.user_email_TextView);
-        logout_Button = view.findViewById(R.id.logout_Button);
-        cart_Button = view.findViewById(R.id.cart_Button);
+        Listeners();
+
+        CartHandler cartHandler = new CartHandler();
+        cartHandler.Bind_Data(Session.getUser().getId(), cart_recyclerView, getContext());
     }
 
     private void Listeners(){
-        logout_Button.setOnClickListener(v -> {
-            Session.Logout();
-            Intent intent = new Intent(getContext(), MainActivity.class);
-            startActivity(intent);
-        });
-        cart_Button.setOnClickListener(v->{
-            FragmentUtils.ReplaceFragment(
-                    getParentFragmentManager(), R.id.user_FrameLayout, new CartFragment()
-            );
-        });
+        //TODO mama mia
     }
 
-    private void BindData(){
-        name.setText("Name : " + Session.getUser().getName() + "#" + Session.getUser().getId());
-        email.setText("Email : " + Session.getUser().getEmail());
+    private void InitViews(View view){
+        cart_recyclerView = view.findViewById(R.id.cart_RecyclerView);
     }
 }

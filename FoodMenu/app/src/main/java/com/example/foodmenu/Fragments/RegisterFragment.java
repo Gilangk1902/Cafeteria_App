@@ -12,14 +12,13 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.foodmenu.DataBaseHandler.UserHandler;
+import com.example.foodmenu.DataBaseHandler.CustomerHandler;
 import com.example.foodmenu.Entity.User;
 import com.example.foodmenu.Factory.UserFactory;
 import com.example.foodmenu.R;
 import com.example.foodmenu.Utils.FragmentUtils;
 import com.example.foodmenu.Utils.ValidatorUtils;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.database.DatabaseReference;
 
 import java.util.ArrayList;
 
@@ -93,8 +92,8 @@ public class RegisterFragment extends Fragment {
                 password_TextInputEditText.getText().toString()
         );
 
-        UserHandler userHandler = new UserHandler();
-        userHandler.Register(newUser);
+        CustomerHandler customerHandler = new CustomerHandler();
+        customerHandler.Register(newUser);
 
         FragmentUtils.ReplaceFragment(getParentFragmentManager(),
                 R.id.user_FrameLayout, new LoginFragment());

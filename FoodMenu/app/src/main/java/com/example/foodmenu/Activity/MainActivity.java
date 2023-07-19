@@ -48,6 +48,7 @@ public class MainActivity extends AppCompatActivity {
             }
             else if(item.getItemId() == R.id.user_nav_item){
                 Intent intent = new Intent(MainActivity.this, UserActivity.class);
+                intent.putExtra(UserActivity.PROFILE_KEY, 1);
                 startActivity(intent);
                 return true;
             }

@@ -1,23 +1,34 @@
 package com.example.foodmenu.DataBaseHandler;
 
+import android.content.Context;
 import android.net.Uri;
-import android.widget.Toast;
+import android.widget.ImageView;
+import android.widget.TextView;
 
+import androidx.annotation.NonNull;
+import androidx.recyclerview.widget.GridLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
+import com.bumptech.glide.Glide;
 import com.example.foodmenu.Entity.Food;
 import com.example.foodmenu.Factory.FoodFactory;
+import com.example.foodmenu.RecyclerViewAdapters.FoodRecyclerViewAdapter;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.storage.StorageReference;
-import com.google.firebase.storage.UploadTask;
+import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.ValueEventListener;
+import com.google.firebase.storage.*;
 
-import java.util.Map;
+import java.util.ArrayList;
 
-public class FoodHandler {
-    private DatabaseReference foodDatabaseReference;
+public class FoodHandler implements Ihandler, IhandlerUtils{
+    private DatabaseReference databaseReference;
     private StorageReference foodStorageReference;
+
     public FoodHandler(){
-        DatabaseSingleton databaseSingleton = new DatabaseSingleton();
-        foodDatabaseReference = databaseSingleton.getDataBase().getReference().child("Food");
-        foodStorageReference = databaseSingleton.getStorage().getReference().child("Food");
+        databaseReference = FirebaseDatabase.getInstance().getReference().child("Food");
+        foodStorageReference = FirebaseStorage.getInstance().getReference().child("Food");
     }
 
     public void Add(String name, String price,Uri image_Uri){
@@ -34,7 +45,7 @@ public class FoodHandler {
 
                     Food food = FoodFactory.Create(name, price, image_Url);
 
-                    DatabaseReference foodReference = getFoodDatabaseReference().child(food.getId());
+                    DatabaseReference foodReference = getDatabaseReference().child(food.getId());
                     foodReference.child("name").setValue(food.getName());
                     foodReference.child("price").setValue(food.getPrice());
                     foodReference.child("image").setValue(food.getImageUrl());
@@ -54,7 +65,7 @@ public class FoodHandler {
                 imageRef.getDownloadUrl().addOnSuccessListener(uri -> {
                     String image_Url  = uri.toString();
 
-                    DatabaseReference foodReference = getFoodDatabaseReference().child(target_id);
+                    DatabaseReference foodReference = getDatabaseReference().child(target_id);
                     foodReference.child("name").setValue(name);
                     foodReference.child("price").setValue(price);
                     foodReference.child("image").setValue(image_Url);
@@ -64,21 +75,105 @@ public class FoodHandler {
             });
         }
         else{
-            DatabaseReference foodReference = getFoodDatabaseReference().child(target_id);
+            DatabaseReference foodReference = getDatabaseReference().child(target_id);
             foodReference.child("name").setValue(name);
             foodReference.child("price").setValue(price);
         }
     }
 
-    public DatabaseReference getFoodDatabaseReference(){
-        return foodDatabaseReference;
+    public void Bind_Data(String id,RecyclerView item_RecyclerView, Context context){
+        getDatabaseReference().addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                ArrayList<Food> foods = new ArrayList<>();
+                for(DataSnapshot food_snapshot : snapshot.getChildren()){
+                    Food newFood = new Food(
+                            food_snapshot.getKey(),
+                            food_snapshot.child("name").getValue(String.class),
+                            food_snapshot.child("price").getValue(String.class),
+                            food_snapshot.child("image").getValue(String.class)
+                    );
+
+                    foods.add(newFood);
+                }
+
+                FoodRecyclerViewAdapter food_recyclerview_adapter  = new FoodRecyclerViewAdapter(
+                        foods, context
+                );
+                GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 2);
+                item_RecyclerView.setLayoutManager(gridLayoutManager);
+                item_RecyclerView.setAdapter(food_recyclerview_adapter);
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void setIntoTextView(String id, String key, TextView textView) {
+        databaseReference.child(id).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    String text = snapshot.child(key).getValue(String.class);
+                    textView.setText(text);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void setIntoTextView_Price(String id, int quantity,TextView textView){
+        databaseReference.child(id).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    String price_inString = snapshot.child("price").getValue(String.class);
+                    int price_inInteger = Integer.parseInt(price_inString);
+
+                    textView.setText("Rp. " + String.valueOf(price_inInteger*quantity));
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void setIntoImageView(String id, ImageView imageView, Context context){
+        databaseReference.child(id).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    String imageUrl = snapshot.child("image").getValue(String.class);
+                    Glide.with(context).load(imageUrl).into(imageView);
+                }
+
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public DatabaseReference getDatabaseReference() {
+        return databaseReference;
     }
 
     public StorageReference getFoodStorageReference(){
         return foodStorageReference;
     }
 
-    public DatabaseReference getFoodById(String id){
-        return foodDatabaseReference.child(id);
-    }
 }

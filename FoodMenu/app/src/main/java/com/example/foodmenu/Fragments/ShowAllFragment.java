@@ -77,7 +77,9 @@ public class ShowAllFragment extends Fragment {
         super.onViewCreated(view, savedInstanceState);
         InitViews(view);
         Listeners(view);
-        Bind_FoodData(view);
+
+        FoodHandler foodHandler = new FoodHandler();
+        foodHandler.Bind_Data("",item_RecyclerView, getContext());
     }
 
     private void InitViews(View view){
@@ -88,66 +90,14 @@ public class ShowAllFragment extends Fragment {
 
     private void Listeners(View view){
         foods_Button.setOnClickListener(v -> {
-            Bind_FoodData(view);
+            FoodHandler foodHandler = new FoodHandler();
+            foodHandler.Bind_Data("",item_RecyclerView, getContext());
         });
         drinks_Button.setOnClickListener(v -> {
-            Bind_DrinkData(view);
+            DrinkHandler drinkHandler = new DrinkHandler();
+            drinkHandler.Bind_Data("",item_RecyclerView, getContext());
         });
     }
 
-    private void Bind_FoodData(View view){
-        FoodHandler foodHandler = new FoodHandler();
-        foodHandler.getFoodDatabaseReference().addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ArrayList<Food> foods = new ArrayList<>();
-                for(DataSnapshot food_snapshot : snapshot.getChildren()){
-                    Food newFood = new Food(food_snapshot.getKey(),
-                            food_snapshot.child("name").getValue(String.class),
-                            food_snapshot.child("price").getValue(String.class),
-                            food_snapshot.child("image").getValue(String.class));
 
-                    foods.add(newFood);
-                }
-
-                food_recyclerview_adapter  = new FoodRecyclerViewAdapter(foods, getContext());
-                GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
-                item_RecyclerView.setLayoutManager(gridLayoutManager);
-                item_RecyclerView.setAdapter(food_recyclerview_adapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
-    private void Bind_DrinkData(View view){
-        DrinkHandler drinkHandler = new DrinkHandler();
-        drinkHandler.getDrinkDatabaseReference().addValueEventListener(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                ArrayList<Drink> drinks = new ArrayList<>();
-                for(DataSnapshot drink_snapshot : snapshot.getChildren()){
-                    Drink newDrink = new Drink(drink_snapshot.getKey(),
-                            drink_snapshot.child("name").getValue(String.class),
-                            drink_snapshot.child("price").getValue(String.class),
-                            drink_snapshot.child("image").getValue(String.class));
-
-                    drinks.add(newDrink);
-                }
-
-                drink_recyclerview_adapter  = new DrinkRecyclerViewAdapter(drinks, getContext());
-                GridLayoutManager gridLayoutManager = new GridLayoutManager(getContext(), 2);
-                item_RecyclerView.setLayoutManager(gridLayoutManager);
-                item_RecyclerView.setAdapter(drink_recyclerview_adapter);
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
 }

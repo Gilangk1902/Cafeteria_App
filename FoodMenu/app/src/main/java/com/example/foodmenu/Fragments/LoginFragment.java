@@ -1,6 +1,5 @@
 package com.example.foodmenu.Fragments;
 
-import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -13,17 +12,12 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.TextView;
 
-import com.example.foodmenu.Activity.MainActivity;
-import com.example.foodmenu.App_Start.Session;
-import com.example.foodmenu.DataBaseHandler.UserHandler;
-import com.example.foodmenu.Entity.User;
+import com.example.foodmenu.DataBaseHandler.AdminHandler;
+import com.example.foodmenu.DataBaseHandler.CustomerHandler;
 import com.example.foodmenu.R;
 import com.example.foodmenu.Utils.FragmentUtils;
 import com.example.foodmenu.Utils.ValidatorUtils;
 import com.google.android.material.textfield.TextInputEditText;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
@@ -76,41 +70,22 @@ public class LoginFragment extends Fragment {
 
     private void Login_onClick(){
         if(!ValidatorUtils.isSomethingEmpty(editTexts)){
-            String email = email_TextInputEditText.getText().toString();
-            String password = password_TextInputEditText.getText().toString();
-
-            UserHandler userHandler = new UserHandler();
-
-            if(isAdmin(email)){
-                userHandler.getAdmins().addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for(DataSnapshot adminSnapshot : snapshot.getChildren()){
-                            userHandler.Login(adminSnapshot, email, password, "admin", getContext());
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
+            if(isAdmin(email_TextInputEditText.getText().toString())){
+                AdminHandler adminHandler = new AdminHandler();
+                adminHandler.Login(
+                        email_TextInputEditText.getText().toString(),
+                        password_TextInputEditText.getText().toString(),
+                        getContext()
+                );
             }
 
             else{
-                userHandler.getCustomersDatabaseReference().addValueEventListener(new ValueEventListener() {
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
-                        for(DataSnapshot customerSnapShot : snapshot.getChildren()){
-                            userHandler.Login(customerSnapShot, email, password, "customer", getContext());
-                        }
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-
-                    }
-                });
+                CustomerHandler customerHandler = new CustomerHandler();
+                customerHandler.Login(
+                        email_TextInputEditText.getText().toString(),
+                        password_TextInputEditText.getText().toString(),
+                        getContext()
+                );
             }
         }
     }

@@ -1,5 +1,6 @@
 package com.example.foodmenu.Fragments;
 
+import android.content.Intent;
 import android.os.Bundle;
 
 import androidx.annotation.NonNull;
@@ -12,11 +13,11 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.bumptech.glide.Glide;
+import com.example.foodmenu.Activity.UserActivity;
 import com.example.foodmenu.App_Start.Session;
-import com.example.foodmenu.Entity.Food;
+import com.example.foodmenu.DataBaseHandler.CartHandler;
 import com.example.foodmenu.Entity.Item;
 import com.example.foodmenu.R;
 import com.example.foodmenu.Utils.FragmentUtils;
@@ -86,8 +87,12 @@ public class DetailsFragment extends Fragment {
         }
         else if(Session.getRole().equals("customer")){
             buy_button.setOnClickListener(v->{
-                Toast.makeText(getContext(), "Not implemented yet", Toast.LENGTH_SHORT).show();
-                //TODO
+                CartHandler cartHandler = new CartHandler();
+                cartHandler.AddNewItem(Session.getUser().getId(), item.getId());
+
+                Intent intent = new Intent(getContext(), UserActivity.class);
+                intent.putExtra(UserActivity.CART_KEY, 1);
+                startActivity(intent);
             });
         }
     }
