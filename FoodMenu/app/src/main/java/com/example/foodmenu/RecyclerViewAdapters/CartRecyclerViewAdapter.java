@@ -140,7 +140,8 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter<CartRecyclerVi
                 if(cart_items.get(getAdapterPosition()).getQuantity()>=1){
                     //TODO
                     // add item
-                    cartHandler.IncreaseQuantity(
+                    cartHandler.ModifyQuantity(
+                            CartHandler.PLUS,
                             Session.getUser().getId(),
                             cart_items.get(getAdapterPosition()).getId()
                     );
@@ -154,7 +155,8 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter<CartRecyclerVi
             });
 
             min_Button.setOnClickListener(v -> {
-                cartHandler.DecreaseQuantity(
+                cartHandler.ModifyQuantity(
+                        CartHandler.MINUS,
                         Session.getUser().getId(),
                         cart_items.get(getAdapterPosition()).getId()
                 );

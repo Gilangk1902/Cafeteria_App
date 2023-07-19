@@ -18,6 +18,8 @@ import com.google.firebase.database.ValueEventListener;
 import java.util.ArrayList;
 
 public class CartHandler implements Ihandler{
+    public static final String PLUS = "+";
+    public static final String MINUS = "-";
     private DatabaseReference cartReference;
 
     public CartHandler(){
@@ -28,31 +30,18 @@ public class CartHandler implements Ihandler{
         getCartReference().child(customer_id).child(itemId).child("quantity").setValue(1);
     }
 
-    public void IncreaseQuantity(String customer_id, String itemId){
-        DatabaseReference quantity_reference = getCartReference().child(customer_id).child(itemId)
-                                                .child("quantity");
-
-        quantity_reference.addListenerForSingleValueEvent(new ValueEventListener() {
-            @Override
-            public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Increment(quantity_reference, snapshot.getValue(Integer.class));
-            }
-
-            @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
-        });
-    }
-
-    public void DecreaseQuantity(String customer_id, String itemId){
+    public void ModifyQuantity(String operator ,String customer_id, String itemId){
         DatabaseReference quantity_reference = getCartReference().child(customer_id).child(itemId)
                 .child("quantity");
-
         quantity_reference.addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
-                Decrement(quantity_reference, snapshot.getValue(Integer.class));
+                if(operator.equals(MINUS)){
+                    quantity_reference.setValue(snapshot.getValue(Integer.class) - 1);
+                }
+                else if(operator.equals(PLUS)){
+                    quantity_reference.setValue(snapshot.getValue(Integer.class) + 1);
+                }
             }
 
             @Override
@@ -60,13 +49,6 @@ public class CartHandler implements Ihandler{
 
             }
         });
-    }
-
-    private void Increment(DatabaseReference databaseReference, int current_quantity){
-        databaseReference.setValue(current_quantity + 1);
-    }
-    private void Decrement(DatabaseReference databaseReference, int current_quantity){
-        databaseReference.setValue(current_quantity - 1);
     }
 
     public void Bind_Data(String customer_id,RecyclerView cart_RecyclerView, Context context){

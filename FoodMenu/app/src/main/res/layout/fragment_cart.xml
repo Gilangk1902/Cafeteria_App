@@ -30,6 +30,29 @@
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
                 app:layout_constraintBottom_toBottomOf="parent"/>
+
+            <TextView
+                android:id="@+id/total_price_TextView"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Rp.xx.xxx.xxx"
+                android:textSize="25dp"
+                android:textColor="@color/green"
+                app:layout_constraintTop_toBottomOf="@id/cart_RecyclerView"
+                app:layout_constraintStart_toStartOf="parent"
+                android:layout_margin="10dp"/>
+
+            <Button
+                android:id="@+id/order_Button"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginEnd="10dp"
+                android:text="Order"
+                app:layout_constraintBottom_toBottomOf="@id/total_price_TextView"
+                app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="1.0"
+                app:layout_constraintStart_toEndOf="@id/total_price_TextView"
+                app:layout_constraintTop_toTopOf="@id/total_price_TextView" />
         </androidx.constraintlayout.widget.ConstraintLayout>
     </ScrollView>
 </FrameLayout>
