@@ -120,7 +120,6 @@ public class FoodHandler implements Ihandler, IhandlerUtils{
                     String text = snapshot.child(key).getValue(String.class);
                     textView.setText(text);
                 }
-
             }
 
             @Override
@@ -130,15 +129,16 @@ public class FoodHandler implements Ihandler, IhandlerUtils{
         });
     }
 
-    public void setIntoTextView_Price(String id, int quantity,TextView textView){
+    public void setIntoTextView_Price(String id, int quantity, TextView price_TextView,
+                                      ArrayList<Integer> prices, OnDataBindCompleteListener callback){
         databaseReference.child(id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()){
                     String price_inString = snapshot.child("price").getValue(String.class);
                     int price_inInteger = Integer.parseInt(price_inString);
-
-                    textView.setText("Rp. " + String.valueOf(price_inInteger*quantity));
+                    prices.add(price_inInteger*quantity);
+                    price_TextView.setText("Rp. " + String.valueOf(price_inInteger*quantity));
                 }
 
             }
@@ -158,7 +158,6 @@ public class FoodHandler implements Ihandler, IhandlerUtils{
                     String imageUrl = snapshot.child("image").getValue(String.class);
                     Glide.with(context).load(imageUrl).into(imageView);
                 }
-
             }
 
             @Override
@@ -166,6 +165,10 @@ public class FoodHandler implements Ihandler, IhandlerUtils{
 
             }
         });
+    }
+
+    public DatabaseReference getFoodById(String id){
+        return databaseReference.child(id);
     }
 
     public DatabaseReference getDatabaseReference() {

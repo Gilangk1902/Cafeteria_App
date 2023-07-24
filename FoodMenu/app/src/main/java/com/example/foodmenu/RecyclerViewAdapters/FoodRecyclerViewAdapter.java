@@ -43,7 +43,7 @@ public class FoodRecyclerViewAdapter extends RecyclerView.Adapter<FoodRecyclerVi
                         .load(foods.get(position).getImageUrl())
                         .into(holder.image_ImageView);
         holder.title_TextView.setText(foods.get(position).getName());
-        holder.price_TextView.setText(foods.get(position).getPrice());
+        holder.price_TextView.setText("Rp. " + foods.get(position).getPrice());
 
     }
 

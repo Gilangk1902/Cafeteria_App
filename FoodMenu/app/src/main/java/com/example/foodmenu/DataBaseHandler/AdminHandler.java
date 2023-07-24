@@ -18,7 +18,7 @@ public class AdminHandler {
     private DatabaseReference adminReference;
 
     public AdminHandler(){
-        FirebaseDatabase.getInstance().getReference().child("User").child("Admin");
+        adminReference = FirebaseDatabase.getInstance().getReference().child("User").child("Admin");
     }
 
     public void Register(User newUser){

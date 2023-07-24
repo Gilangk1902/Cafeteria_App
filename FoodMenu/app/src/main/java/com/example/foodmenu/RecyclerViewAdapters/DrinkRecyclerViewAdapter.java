@@ -43,7 +43,7 @@ public class DrinkRecyclerViewAdapter extends RecyclerView.Adapter<DrinkRecycler
                 .load(drinks.get(position).getImageUrl())
                 .into(holder.image_ImageView);
         holder.title_TextView.setText(drinks.get(position).getName());
-        holder.price_TextView.setText(drinks.get(position).getPrice());
+        holder.price_TextView.setText("Rp. " + drinks.get(position).getPrice());
 
     }
 

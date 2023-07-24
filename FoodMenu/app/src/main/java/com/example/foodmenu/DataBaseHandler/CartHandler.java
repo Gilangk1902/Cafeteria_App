@@ -1,6 +1,7 @@
 package com.example.foodmenu.DataBaseHandler;
 
 import android.content.Context;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import androidx.annotation.NonNull;
@@ -8,6 +9,8 @@ import androidx.recyclerview.widget.GridLayoutManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.foodmenu.Entity.CartItem;
+import com.example.foodmenu.Entity.Drink;
+import com.example.foodmenu.Entity.Food;
 import com.example.foodmenu.RecyclerViewAdapters.CartRecyclerViewAdapter;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -17,7 +20,7 @@ import com.google.firebase.database.ValueEventListener;
 
 import java.util.ArrayList;
 
-public class CartHandler implements Ihandler{
+public class CartHandler{
     public static final String PLUS = "+";
     public static final String MINUS = "-";
     private DatabaseReference cartReference;
@@ -51,7 +54,10 @@ public class CartHandler implements Ihandler{
         });
     }
 
-    public void Bind_Data(String customer_id,RecyclerView cart_RecyclerView, Context context){
+    public void Bind_Data(String customer_id, ArrayList<Integer> prices,
+                          RecyclerView cart_RecyclerView, Context context,
+                          OnDataBindCompleteListener callback)
+    {
         getCartReference().child(customer_id).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
@@ -71,12 +77,11 @@ public class CartHandler implements Ihandler{
                                     " items in your cart!", Toast.LENGTH_SHORT).show();
                 }
                 CartRecyclerViewAdapter cartRecyclerViewAdapter = new CartRecyclerViewAdapter(
-                        cartItems, context
+                         cartItems, prices ,context, callback
                 );
                 GridLayoutManager gridLayoutManager = new GridLayoutManager(context, 1);
                 cart_RecyclerView.setLayoutManager(gridLayoutManager);
                 cart_RecyclerView.setAdapter(cartRecyclerViewAdapter);
-
             }
 
             @Override
@@ -93,4 +98,6 @@ public class CartHandler implements Ihandler{
     public void setCartReference(DatabaseReference cartReference) {
         this.cartReference = cartReference;
     }
+
+
 }

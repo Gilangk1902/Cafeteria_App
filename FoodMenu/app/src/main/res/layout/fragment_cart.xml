@@ -35,19 +35,23 @@
                 android:id="@+id/total_price_TextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_margin="10dp"
                 android:text="Rp.xx.xxx.xxx"
-                android:textSize="25dp"
                 android:textColor="@color/green"
-                app:layout_constraintTop_toBottomOf="@id/cart_RecyclerView"
+                android:textSize="25dp"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintStart_toStartOf="parent"
-                android:layout_margin="10dp"/>
+                app:layout_constraintTop_toBottomOf="@id/cart_RecyclerView"
+                android:visibility="gone"/>
 
             <Button
                 android:id="@+id/order_Button"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="10dp"
-                android:text="Order"
+                android:layout_marginTop="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginBottom="20dp"
+                android:text="Done"
                 app:layout_constraintBottom_toBottomOf="@id/total_price_TextView"
                 app:layout_constraintEnd_toEndOf="parent"
                 app:layout_constraintHorizontal_bias="1.0"

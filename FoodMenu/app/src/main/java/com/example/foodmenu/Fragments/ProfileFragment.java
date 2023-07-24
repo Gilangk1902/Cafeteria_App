@@ -15,6 +15,8 @@ import android.widget.TextView;
 
 import com.example.foodmenu.Activity.MainActivity;
 import com.example.foodmenu.App_Start.Session;
+import com.example.foodmenu.Entity.Admin;
+import com.example.foodmenu.Entity.Customer;
 import com.example.foodmenu.R;
 import com.example.foodmenu.Utils.FragmentUtils;
 
@@ -26,7 +28,7 @@ public class ProfileFragment extends Fragment {
     private String mParam2;
 
     private TextView name, email;
-    private Button logout_Button, cart_Button;
+    private Button logout_Button, cart_order_Button;
 
     public ProfileFragment() {
         // Required empty public constructor
@@ -70,7 +72,7 @@ public class ProfileFragment extends Fragment {
         name =  view.findViewById(R.id.user_name_TextView);
         email = view.findViewById(R.id.user_email_TextView);
         logout_Button = view.findViewById(R.id.logout_Button);
-        cart_Button = view.findViewById(R.id.cart_Button);
+        cart_order_Button = view.findViewById(R.id.cart_Button);
     }
 
     private void Listeners(){
@@ -79,15 +81,28 @@ public class ProfileFragment extends Fragment {
             Intent intent = new Intent(getContext(), MainActivity.class);
             startActivity(intent);
         });
-        cart_Button.setOnClickListener(v->{
-            FragmentUtils.ReplaceFragment(
-                    getParentFragmentManager(), R.id.user_FrameLayout, new CartFragment()
-            );
+        cart_order_Button.setOnClickListener(v->{
+            if(Session.getUser().getId().contains(Customer.CODE)){
+                FragmentUtils.ReplaceFragment(
+                        getParentFragmentManager(), R.id.user_FrameLayout, new CartFragment()
+                );
+            }
+            else if(Session.getUser().getId().contains(Admin.CODE)){
+                FragmentUtils.ReplaceFragment(
+                        getParentFragmentManager(), R.id.user_FrameLayout, new OrdersFragment()
+                );
+            }
         });
     }
 
     private void BindData(){
         name.setText("Name : " + Session.getUser().getName() + "#" + Session.getUser().getId());
         email.setText("Email : " + Session.getUser().getEmail());
+        if(Session.getUser().getId().contains(Customer.CODE)){
+            cart_order_Button.setText("Your Cart");
+        }
+        else if(Session.getUser().getId().contains(Admin.CODE)){
+            cart_order_Button.setText("Orders");
+        }
     }
 }

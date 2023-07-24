@@ -19,7 +19,10 @@ import com.example.foodmenu.App_Start.Session;
 import com.example.foodmenu.DataBaseHandler.CartHandler;
 import com.example.foodmenu.DataBaseHandler.DrinkHandler;
 import com.example.foodmenu.DataBaseHandler.FoodHandler;
+import com.example.foodmenu.DataBaseHandler.OnDataBindCompleteListener;
 import com.example.foodmenu.Entity.CartItem;
+import com.example.foodmenu.Entity.Drink;
+import com.example.foodmenu.Entity.Food;
 import com.example.foodmenu.Fragments.CartFragment;
 import com.example.foodmenu.R;
 import com.example.foodmenu.Utils.FragmentUtils;
@@ -27,16 +30,23 @@ import com.example.foodmenu.Utils.FragmentUtils;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CartRecyclerViewAdapter extends RecyclerView.Adapter<CartRecyclerViewAdapter.ViewHolder>{
-    private final String FOOD_CODE = "FD";
-    private final String DRINK_CODE = "DK";
-
+public class CartRecyclerViewAdapter extends RecyclerView.Adapter<CartRecyclerViewAdapter.ViewHolder>
+{
     private ArrayList<CartItem> cart_items = new ArrayList<>();
+
     private Context context;
 
-    public CartRecyclerViewAdapter(ArrayList<CartItem> _cart_items, Context context){
+    private ArrayList<Integer> prices = new ArrayList<>();
+    private OnDataBindCompleteListener callback;
+
+    private int boundItemCount = 0;
+
+    public CartRecyclerViewAdapter(ArrayList<CartItem> _cart_items, ArrayList<Integer> prices,
+                                   Context context, OnDataBindCompleteListener callBack){
         this.cart_items = _cart_items;
         this.context = context;
+        this.prices = prices;
+        this.callback = callBack;
     }
 
     @NonNull
@@ -50,13 +60,18 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter<CartRecyclerVi
     @Override
     public void onBindViewHolder(@NonNull CartRecyclerViewAdapter.ViewHolder holder, int position) {
         String cartItemId = cart_items.get(position).getId();
-        if(cartItemId.contains(FOOD_CODE)){
+        if(cartItemId.contains(Food.CODE)){
             Bind_Food(holder, position);
         }
-        else if(cartItemId.contains(DRINK_CODE)){
+        else if(cartItemId.contains(Drink.CODE)){
             Bind_Drink(holder, position);
         }
         holder.item_count_TextView.setText(String.valueOf(cart_items.get(position).getQuantity()));
+
+        boundItemCount++;
+        if(boundItemCount == cart_items.size()){
+            callback.onDataBindComplete();
+        }
     }
 
     private void Bind_Food(ViewHolder holder, int position){
@@ -70,7 +85,9 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter<CartRecyclerVi
         foodHandler.setIntoTextView_Price(
                 cart_items.get(position).getId(),
                 cart_items.get(position).getQuantity(),
-                holder.price_TextView
+                holder.price_TextView,
+                prices,
+                callback
         );
 
         foodHandler.setIntoImageView(
@@ -92,7 +109,9 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter<CartRecyclerVi
         drinkHandler.setIntoTextView_Price(
                 cart_items.get(position).getId(),
                 cart_items.get(position).getQuantity(),
-                holder.price_TextView
+                holder.price_TextView,
+                prices,
+                callback
         );
 
         drinkHandler.setIntoImageView(
@@ -138,8 +157,6 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter<CartRecyclerVi
             CartHandler cartHandler = new CartHandler();
             plus_Button.setOnClickListener(v -> {
                 if(cart_items.get(getAdapterPosition()).getQuantity()>=1){
-                    //TODO
-                    // add item
                     cartHandler.ModifyQuantity(
                             CartHandler.PLUS,
                             Session.getUser().getId(),

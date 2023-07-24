@@ -130,14 +130,15 @@ public class DrinkHandler implements Ihandler,IhandlerUtils{
         });
     }
 
-    public void setIntoTextView_Price(String id, int quantity,TextView textView){
+    public void setIntoTextView_Price(String id, int quantity, TextView textView,
+                                      ArrayList<Integer> prices, OnDataBindCompleteListener callback){
         databaseReference.child(id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()){
                     String price_inString = snapshot.child("price").getValue(String.class);
                     int price_inInteger = Integer.parseInt(price_inString);
-
+                    prices.add(price_inInteger*quantity);
                     textView.setText("Rp. " + String.valueOf(price_inInteger*quantity));
                 }
 

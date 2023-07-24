@@ -2,6 +2,7 @@ package com.example.foodmenu.DataBaseHandler;
 
 import android.content.Context;
 import android.content.Intent;
+import android.widget.TextView;
 
 import androidx.annotation.NonNull;
 import androidx.recyclerview.widget.RecyclerView;
@@ -10,6 +11,7 @@ import com.example.foodmenu.Activity.MainActivity;
 import com.example.foodmenu.App_Start.Session;
 import com.example.foodmenu.Entity.CartItem;
 import com.example.foodmenu.Entity.Customer;
+import com.example.foodmenu.Entity.Order;
 import com.example.foodmenu.Entity.User;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -63,6 +65,25 @@ public class CustomerHandler implements Ihandler{
                         else{
                             //Password Doesn't Match
                         }
+                    }
+                }
+            }
+
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+
+            }
+        });
+    }
+
+    public void getCustomerNameByID(String id, ArrayList<Order> orders ,final OnNameRetrievedListener listener){
+        getCustomersDatabaseReference().child(id).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
+                if(snapshot.exists()){
+                    String name = snapshot.child("name").getValue(String.class);
+                    if(name!=null){
+                        listener.onNameRetrieved(name, orders);
                     }
                 }
             }
