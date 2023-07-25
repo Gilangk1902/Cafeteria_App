@@ -11,11 +11,12 @@ import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 
 import com.example.foodmenu.DataBaseHandler.OrderHandler;
 import com.example.foodmenu.Entity.CartItem;
-import com.example.foodmenu.Entity.Item;
 import com.example.foodmenu.R;
+import com.example.foodmenu.Utils.FragmentUtils;
 
 import java.util.ArrayList;
 
@@ -31,11 +32,13 @@ public class CustomerOrderFragment extends Fragment {
     private Context context;
 
     private RecyclerView items_RecyclerView;
-    private String id;
+    private String order_id;
+
+    private Button done_button;
 
     public CustomerOrderFragment(String id, Context _context) {
         this.context = _context;
-        this.id = id;
+        this.order_id = id;
     }
 
     @Override
@@ -58,13 +61,22 @@ public class CustomerOrderFragment extends Fragment {
     public void onViewCreated(@NonNull View view, @Nullable Bundle savedInstanceState) {
         super.onViewCreated(view, savedInstanceState);
         InitViews(view);
+        Listeners();
     }
 
     private void InitViews(View view){
         items_RecyclerView = view.findViewById(R.id.item_RecyclerView);
         OrderHandler orderHandler = new OrderHandler();
-        orderHandler.BindData_CustomerOrder(this.id, items_RecyclerView,getContext());
+        orderHandler.BindData_CustomerOrder(this.order_id, items_RecyclerView,getContext());
+
+        done_button = view.findViewById(R.id.done_Button);
     }
 
-
+    private void Listeners(){
+        done_button.setOnClickListener(v -> {
+            OrderHandler orderHandler = new OrderHandler();
+            orderHandler.DeleteOrder(order_id);
+            FragmentUtils.ReplaceFragment(getParentFragmentManager(), R.id.user_FrameLayout, new OrdersFragment());
+        });
+    }
 }

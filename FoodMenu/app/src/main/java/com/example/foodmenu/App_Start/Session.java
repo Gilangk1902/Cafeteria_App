@@ -4,8 +4,6 @@ import com.example.foodmenu.Entity.Admin;
 import com.example.foodmenu.Entity.Customer;
 import com.example.foodmenu.Entity.User;
 
-import java.util.ArrayList;
-
 public class Session {
     public static final String CUSTOMER = "customer";
     public static final String ADMIN = "admin";
@@ -13,9 +11,14 @@ public class Session {
     private static User user;
     private static String role;
 
-    public static void InitUser(){
+    public static void InitCS001(){
         user = new User("CS001","Gilang","test123@gmail.com","test123");
         role = CUSTOMER;
+    }
+
+    public static void InitAD001(){
+        user = new User("AD001", "admin1", "admin1", "admin123");
+        role = ADMIN;
     }
 
     public static void Login(User newUser, String _role){

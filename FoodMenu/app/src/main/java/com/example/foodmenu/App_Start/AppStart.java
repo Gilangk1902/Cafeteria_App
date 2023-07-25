@@ -9,6 +9,6 @@ public class AppStart extends Application {
     public void onCreate() {
         super.onCreate();
         FirebaseApp.initializeApp(this);
-        Session.InitUser();
+        Session.InitAD001();
     }
 }
