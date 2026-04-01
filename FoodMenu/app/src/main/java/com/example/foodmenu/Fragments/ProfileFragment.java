@@ -96,13 +96,13 @@ public class ProfileFragment extends Fragment {
     }
 
     private void BindData(){
-        name.setText("Name : " + Session.getUser().getName() + "#" + Session.getUser().getId());
-        email.setText("Email : " + Session.getUser().getEmail());
+        name.setText("Hello " + Session.getUser().getName());
+        email.setText("");
         if(Session.getUser().getId().contains(Customer.CODE)){
             cart_order_Button.setText("Your Cart");
         }
         else if(Session.getUser().getId().contains(Admin.CODE)){
-            cart_order_Button.setText("Orders");
+            cart_order_Button.setText("View Orders");
         }
     }
 }

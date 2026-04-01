@@ -84,7 +84,7 @@ public class MainActivity extends AppCompatActivity {
                 floatingActionButton.hide();
             }
             else if(Session.getRole().equals("admin")){
-                welcome_sign.setText("Welcome, bitch ass ni-");
+                welcome_sign.setText("Welcome, " + Session.getUser().getName());
                 floatingActionButton.show();
             }
         }

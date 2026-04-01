@@ -9,10 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import androidx.annotation.NonNull;
-import androidx.appcompat.app.AppCompatActivity;
-import androidx.constraintlayout.widget.ConstraintLayout;
-import androidx.fragment.app.Fragment;
-import androidx.fragment.app.FragmentManager;
 import androidx.recyclerview.widget.RecyclerView;
 
 import com.example.foodmenu.App_Start.Session;
@@ -23,59 +19,61 @@ import com.example.foodmenu.DataBaseHandler.OnDataBindCompleteListener;
 import com.example.foodmenu.Entity.CartItem;
 import com.example.foodmenu.Entity.Drink;
 import com.example.foodmenu.Entity.Food;
-import com.example.foodmenu.Fragments.CartFragment;
 import com.example.foodmenu.R;
-import com.example.foodmenu.Utils.FragmentUtils;
 
 import java.util.ArrayList;
-import java.util.List;
 
-public class CartRecyclerViewAdapter extends RecyclerView.Adapter<CartRecyclerViewAdapter.ViewHolder>
-{
-    private ArrayList<CartItem> cart_items = new ArrayList<>();
+public class CartRecyclerViewAdapter extends RecyclerView.Adapter<CartRecyclerViewAdapter.ViewHolder> {
 
-    private Context context;
-
-    private ArrayList<Integer> prices = new ArrayList<>();
-    private OnDataBindCompleteListener callback;
-
-    private int boundItemCount = 0;
-
-    public CartRecyclerViewAdapter(ArrayList<CartItem> _cart_items, ArrayList<Integer> prices,
-                                   Context context, OnDataBindCompleteListener callBack){
-        this.cart_items = _cart_items;
-        this.context = context;
+    private final ArrayList<CartItem> cart_items;
+    private final ArrayList<Integer> prices;
+    private final Context context;
+    private final OnDataBindCompleteListener callback;
+    private ArrayList<Integer> itemTotals = new ArrayList<>();
+    public CartRecyclerViewAdapter(ArrayList<CartItem> cartItems,
+                                   ArrayList<Integer> prices,
+                                   Context context,
+                                   OnDataBindCompleteListener callback) {
+        this.cart_items = cartItems;
         this.prices = prices;
-        this.callback = callBack;
+        this.context = context;
+        this.callback = callback;
+        itemTotals = new ArrayList<>();
+        for(int i = 0; i < cart_items.size(); i++){
+            itemTotals.add(0);
+        }
     }
 
     @NonNull
     @Override
     public CartRecyclerViewAdapter.ViewHolder onCreateViewHolder(@NonNull ViewGroup parent, int viewType) {
-        View view = LayoutInflater.from(parent.getContext())
-                                    .inflate(R.layout.cart_item_card, parent, false);
+        View view = LayoutInflater.from(context).inflate(R.layout.cart_item_card, parent, false);
         return new ViewHolder(view);
     }
 
     @Override
     public void onBindViewHolder(@NonNull CartRecyclerViewAdapter.ViewHolder holder, int position) {
+        CartItem item = cart_items.get(position);
+        holder.item_count_TextView.setText(String.valueOf(item.getQuantity()));
+        holder.price_TextView.setText(String.valueOf(prices.get(position)));
+        holder.title_TextView.setText(item.getId());
         String cartItemId = cart_items.get(position).getId();
-        if(cartItemId.contains(Food.CODE)){
+        // Listeners are already set inside ViewHolder
+        if (cartItemId.contains(Food.CODE)) {
             Bind_Food(holder, position);
-        }
-        else if(cartItemId.contains(Drink.CODE)){
+        } else if (cartItemId.contains(Drink.CODE)) {
             Bind_Drink(holder, position);
-        }
-        holder.item_count_TextView.setText(String.valueOf(cart_items.get(position).getQuantity()));
-
-        boundItemCount++;
-        if(boundItemCount == cart_items.size()){
-            callback.onDataBindComplete();
         }
     }
 
-    private void Bind_Food(ViewHolder holder, int position){
+    @Override
+    public int getItemCount() {
+        return cart_items.size();
+    }
+
+    private void Bind_Food(ViewHolder holder, int position) {
         FoodHandler foodHandler = new FoodHandler();
+
         foodHandler.setIntoTextView(
                 cart_items.get(position).getId(),
                 "name",
@@ -86,8 +84,10 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter<CartRecyclerVi
                 cart_items.get(position).getId(),
                 cart_items.get(position).getQuantity(),
                 holder.price_TextView,
-                prices,
-                callback
+                price -> {
+                    itemTotals.set(position, price); // ✅ store per item total
+                    callback.onDataBindComplete();
+                }
         );
 
         foodHandler.setIntoImageView(
@@ -97,7 +97,13 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter<CartRecyclerVi
         );
     }
 
-    private void Bind_Drink(ViewHolder holder, int position){
+    public ArrayList<CartItem> getCartItems() {
+        return cart_items;
+    }
+    public ArrayList<Integer> getItemTotals(){
+        return itemTotals;
+    }
+    private void Bind_Drink(ViewHolder holder, int position) {
         DrinkHandler drinkHandler = new DrinkHandler();
 
         drinkHandler.setIntoTextView(
@@ -110,8 +116,10 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter<CartRecyclerVi
                 cart_items.get(position).getId(),
                 cart_items.get(position).getQuantity(),
                 holder.price_TextView,
-                prices,
-                callback
+                price -> {
+                    itemTotals.set(position, price); // ✅ store per item total
+                    callback.onDataBindComplete();
+                }
         );
 
         drinkHandler.setIntoImageView(
@@ -121,68 +129,57 @@ public class CartRecyclerViewAdapter extends RecyclerView.Adapter<CartRecyclerVi
         );
     }
 
-    @Override
-    public int getItemCount() {
-        if(cart_items == null){
-            return 0;
-        }
-        else{
-            return cart_items.size();
-        }
-    }
+    class ViewHolder extends RecyclerView.ViewHolder {
 
-    public class ViewHolder extends RecyclerView.ViewHolder {
-        private TextView price_TextView, title_TextView, item_count_TextView;
-        private ImageView image_ImageView;
-        private ConstraintLayout card_ConstraintLayout;
-        private Button min_Button, plus_Button;
+        TextView price_TextView, title_TextView, item_count_TextView;
+        ImageView image_ImageView;
+        Button min_Button, plus_Button;
+        CartHandler cartHandler = new CartHandler();
+
         public ViewHolder(@NonNull View itemView) {
             super(itemView);
-            InitViews(itemView);
-            Listeners(itemView);
-        }
-        private void InitViews(View view){
-            price_TextView = view.findViewById(R.id.item_price_TextView);
-            title_TextView = view.findViewById(R.id.item_title_TextView);
-            item_count_TextView = view.findViewById(R.id.item_count_TextView);
+            price_TextView = itemView.findViewById(R.id.item_price_TextView);
+            title_TextView = itemView.findViewById(R.id.item_title_TextView);
+            item_count_TextView = itemView.findViewById(R.id.item_count_TextView);
+            image_ImageView = itemView.findViewById(R.id.item_image_ImageView);
+            min_Button = itemView.findViewById(R.id.minus_Button);
+            plus_Button = itemView.findViewById(R.id.plus_Button);
 
-            image_ImageView = view.findViewById(R.id.item_image_ImageView);
-
-            card_ConstraintLayout = view.findViewById(R.id.card_ConstraintLayout);
-            min_Button = view.findViewById(R.id.minus_Button);
-            plus_Button = view.findViewById(R.id.plus_Button);
-        }
-
-        public void Listeners(View itemView){
-            CartHandler cartHandler = new CartHandler();
             plus_Button.setOnClickListener(v -> {
-                if(cart_items.get(getAdapterPosition()).getQuantity()>=1){
-                    cartHandler.ModifyQuantity(
-                            CartHandler.PLUS,
-                            Session.getUser().getId(),
-                            cart_items.get(getAdapterPosition()).getId()
-                    );
-                    //refresh
-                    FragmentUtils.ReplaceFragment(
-                            ((AppCompatActivity)itemView.getContext()).getSupportFragmentManager(),
-                            R.id.user_FrameLayout,
-                            new CartFragment()
-                    );
-                }
+                int position = getAdapterPosition();
+                if (position == RecyclerView.NO_POSITION) return;
+
+                cartHandler.ModifyQuantity(
+                        CartHandler.PLUS,
+                        Session.getUser().getId(),
+                        cart_items.get(position).getId()
+                );
+
+                // Update the quantity in adapter immediately
+                cart_items.get(position).setQuantity(cart_items.get(position).getQuantity() + 1);
+                notifyItemChanged(position);
+
+                callback.onDataBindComplete(); // notify fragment to recalc total
             });
 
             min_Button.setOnClickListener(v -> {
-                cartHandler.ModifyQuantity(
-                        CartHandler.MINUS,
-                        Session.getUser().getId(),
-                        cart_items.get(getAdapterPosition()).getId()
-                );
-                //refresh
-                FragmentUtils.ReplaceFragment(
-                        ((AppCompatActivity)itemView.getContext()).getSupportFragmentManager(),
-                        R.id.user_FrameLayout,
-                        new CartFragment()
-                );
+                int position = getAdapterPosition();
+                if (position == RecyclerView.NO_POSITION) return;
+
+                int currentQty = cart_items.get(position).getQuantity();
+                if (currentQty > 1) {
+                    cartHandler.ModifyQuantity(
+                            CartHandler.MINUS,
+                            Session.getUser().getId(),
+                            cart_items.get(position).getId()
+                    );
+
+                    // Update the quantity in adapter immediately
+                    cart_items.get(position).setQuantity(currentQty - 1);
+                    notifyItemChanged(position);
+
+                    callback.onDataBindComplete(); // notify fragment to recalc total
+                }
             });
         }
     }
