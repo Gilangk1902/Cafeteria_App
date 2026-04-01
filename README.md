@@ -1,11 +1,11 @@
-# 🍔 Food & Drink Ordering Demo
+# Food & Drink Ordering Demo
 
-## 🎥 Demo Video
+## Demo Video
 Video demo: https://youtu.be/DFDlUT9FAiA
 
 ---
 
-## 🛒 Ordering Flow
+## Ordering Flow
 
 ### 1. Login
 <img src="Images/order/login.png" width="200" style="margin-bottom: 10px;"/>
@@ -44,9 +44,9 @@ After clicking **Done**, the order will be sent to the kitchen.
 
 ---
 
-## 👨‍🍳 Manage Orders (Admin)
+## Manage Orders
 
-🎥 Demo: https://youtu.be/6eh-iNVuO9s
+Demo: https://youtu.be/6eh-iNVuO9s
 
 ### 1. Login as Admin
 <img src="Images/manage order/login.png" width="200" style="margin-bottom: 10px;"/>
@@ -92,7 +92,7 @@ The order will then be removed from the list.
 
 ---
 
-## ⚙️ Other Features
+## Other Features
 
-- 🎥 Edit menu demo: https://youtu.be/sQUyRBdOgbE  
-- 🎥 Add new item demo: https://youtu.be/0d8UynxRx5A
+-  Edit menu demo: https://youtu.be/sQUyRBdOgbE  
+- Add new item demo: https://youtu.be/0d8UynxRx5A
