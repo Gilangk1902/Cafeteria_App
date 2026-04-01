@@ -131,23 +131,24 @@ public class DrinkHandler implements Ihandler,IhandlerUtils{
     }
 
     public void setIntoTextView_Price(String id, int quantity, TextView textView,
-                                      ArrayList<Integer> prices, OnDataBindCompleteListener callback){
+                                      FoodHandler.PriceLoadCallback callback){
         databaseReference.child(id).addValueEventListener(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()){
-                    String price_inString = snapshot.child("price").getValue(String.class);
-                    int price_inInteger = Integer.parseInt(price_inString);
-                    prices.add(price_inInteger*quantity);
-                    textView.setText("Rp. " + String.valueOf(price_inInteger*quantity));
-                }
+                    int unitPrice = Integer.parseInt(
+                            snapshot.child("price").getValue(String.class)
+                    );
 
+                    int total = unitPrice * quantity;
+
+                    textView.setText("Rp. " + total);
+                    callback.onPriceLoaded(total); // ✅ return value
+                }
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
 

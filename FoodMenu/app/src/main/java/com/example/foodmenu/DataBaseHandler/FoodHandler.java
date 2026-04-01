@@ -128,25 +128,30 @@ public class FoodHandler implements Ihandler, IhandlerUtils{
             }
         });
     }
+    public interface PriceLoadCallback {
+        void onPriceLoaded(int totalPrice);
+    }
+    public void setIntoTextView_Price(String id, int quantity,
+                                      TextView price_TextView,
+                                      PriceLoadCallback callback){
 
-    public void setIntoTextView_Price(String id, int quantity, TextView price_TextView,
-                                      ArrayList<Integer> prices, OnDataBindCompleteListener callback){
-        databaseReference.child(id).addValueEventListener(new ValueEventListener() {
+        databaseReference.child(id).addListenerForSingleValueEvent(new ValueEventListener() {
             @Override
             public void onDataChange(@NonNull DataSnapshot snapshot) {
                 if(snapshot.exists()){
-                    String price_inString = snapshot.child("price").getValue(String.class);
-                    int price_inInteger = Integer.parseInt(price_inString);
-                    prices.add(price_inInteger*quantity);
-                    price_TextView.setText("Rp. " + String.valueOf(price_inInteger*quantity));
-                }
+                    int unitPrice = Integer.parseInt(
+                            snapshot.child("price").getValue(String.class)
+                    );
 
+                    int total = unitPrice * quantity;
+
+                    price_TextView.setText("Rp. " + total);
+                    callback.onPriceLoaded(total); // ✅ return value
+                }
             }
 
             @Override
-            public void onCancelled(@NonNull DatabaseError error) {
-
-            }
+            public void onCancelled(@NonNull DatabaseError error) {}
         });
     }
 

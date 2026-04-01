@@ -18,20 +18,20 @@ public class CartHandler {
     public static final String PLUS = "+";
     public static final String MINUS = "-";
 
-    private DatabaseReference cartReference;
-    private ValueEventListener cartListener; // keep reference to avoid duplicates
+    private final DatabaseReference cartReference;
+    private ValueEventListener cartListener;
 
     public CartHandler() {
         cartReference = FirebaseDatabase.getInstance().getReference().child("Cart");
     }
 
-    public void AddNewItem(String customer_id, String itemId) {
-        cartReference.child(customer_id).child(itemId).child("quantity").setValue(1);
+    public void AddNewItem(String customerId, String itemId) {
+        cartReference.child(customerId).child(itemId).child("quantity").setValue(1);
     }
 
-    public void ModifyQuantity(String operator, String customer_id, String itemId) {
+    public void ModifyQuantity(String operator, String customerId, String itemId) {
         DatabaseReference quantityRef = cartReference
-                .child(customer_id)
+                .child(customerId)
                 .child(itemId)
                 .child("quantity");
 
@@ -40,13 +40,10 @@ public class CartHandler {
             @Override
             public Transaction.Result doTransaction(@NonNull MutableData currentData) {
                 Integer value = currentData.getValue(Integer.class);
-
                 if (value == null) value = 0;
 
-                if (operator.equals(MINUS)) {
-                    if (value > 1) {
-                        currentData.setValue(value - 1);
-                    }
+                if (operator.equals(MINUS) && value > 1) {
+                    currentData.setValue(value - 1);
                 } else if (operator.equals(PLUS)) {
                     currentData.setValue(value + 1);
                 }
@@ -56,69 +53,72 @@ public class CartHandler {
 
             @Override
             public void onComplete(DatabaseError error, boolean committed, DataSnapshot snapshot) {
-                // Optional: handle result
+                // Optional: callback
             }
         });
     }
 
-    // ✅ FIXED: Real-time binding
-    public void Bind_Data(String customer_id,
-                          ArrayList<Integer> prices,
-                          RecyclerView recyclerView,
-                          Context context,
-                          OnDataBindCompleteListener callback) {
+    public void BindData(String customerId,
+                         ArrayList<CartItem> cartItems,
+                         ArrayList<Integer> prices,
+                         RecyclerView recyclerView,
+                         Context context,
+                         OnDataBindCompleteListener callback) {
 
-        // Remove old listener to prevent duplicates
         if (cartListener != null) {
-            cartReference.child(customer_id).removeEventListener(cartListener);
+            cartReference.child(customerId).removeEventListener(cartListener);
         }
 
-        cartListener = cartReference.child(customer_id)
-                .addValueEventListener(new ValueEventListener() {
+        cartListener = cartReference.child(customerId).addValueEventListener(new ValueEventListener() {
+            @Override
+            public void onDataChange(@NonNull DataSnapshot snapshot) {
 
-                    @Override
-                    public void onDataChange(@NonNull DataSnapshot snapshot) {
+                cartItems.clear();
+                prices.clear();
 
-                        ArrayList<CartItem> cartItems = new ArrayList<>();
+                for (DataSnapshot cartSnap : snapshot.getChildren()) {
+                    Integer qty = cartSnap.child("quantity").getValue(Integer.class);
+                    if (qty == null) qty = 0;
 
-                        for (DataSnapshot cartSnap : snapshot.getChildren()) {
-                            Integer qty = cartSnap.child("quantity").getValue(Integer.class);
+                    cartItems.add(new CartItem(cartSnap.getKey(), qty));
+                    prices.add(getPrice(cartSnap.getKey()) * qty);
+                }
 
-                            if (qty == null) qty = 0;
+                if (cartItems.isEmpty()) {
+                    Toast.makeText(context, "Cart is empty", Toast.LENGTH_SHORT).show();
+                }
 
-                            cartItems.add(new CartItem(
-                                    cartSnap.getKey(),
-                                    qty
-                            ));
-                        }
+                CartRecyclerViewAdapter adapter = new CartRecyclerViewAdapter(
+                        cartItems,
+                        prices,
+                        context,
+                        callback
+                );
 
-                        if (cartItems.size() <= 0) {
-                            Toast.makeText(context, "Cart is empty", Toast.LENGTH_SHORT).show();
-                        }
+                recyclerView.setLayoutManager(new GridLayoutManager(context, 1));
+                recyclerView.setAdapter(adapter);
 
-                        CartRecyclerViewAdapter adapter = new CartRecyclerViewAdapter(
-                                cartItems,
-                                prices,
-                                context,
-                                callback
-                        );
+                callback.onDataBindComplete();
+            }
 
-                        recyclerView.setLayoutManager(new GridLayoutManager(context, 1));
-                        recyclerView.setAdapter(adapter);
-                    }
-
-                    @Override
-                    public void onCancelled(@NonNull DatabaseError error) {
-                        Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
-                    }
-                });
+            @Override
+            public void onCancelled(@NonNull DatabaseError error) {
+                Toast.makeText(context, error.getMessage(), Toast.LENGTH_SHORT).show();
+            }
+        });
     }
 
-    // ✅ Optional: call this in Activity onDestroy()
-    public void removeListener(String customer_id) {
+    public void removeListener(String customerId) {
         if (cartListener != null) {
-            cartReference.child(customer_id).removeEventListener(cartListener);
+            cartReference.child(customerId).removeEventListener(cartListener);
         }
+    }
+
+    private int getPrice(String itemId){
+        // Replace with actual FoodHandler / DrinkHandler price lookup
+        if(itemId.contains("FOOD")) return 20;
+        else if(itemId.contains("DRINK")) return 10;
+        return 0;
     }
 
     public DatabaseReference getCartReference() {

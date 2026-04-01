@@ -26,20 +26,22 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="20dp"
-                app:layout_constraintTop_toBottomOf="@id/title_TextView"
+                app:layout_constraintBottom_toBottomOf="parent"
                 app:layout_constraintEnd_toEndOf="parent"
+                app:layout_constraintHorizontal_bias="0.498"
                 app:layout_constraintStart_toStartOf="parent"
-                app:layout_constraintBottom_toBottomOf="parent"/>
+                app:layout_constraintTop_toBottomOf="@id/title_TextView"
+                app:layout_constraintVertical_bias="0.0" />
 
             <TextView
                 android:id="@+id/total_price_TextView"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_margin="10dp"
-                android:text="Rp.xx.xxx.xxx"
+                android:text=""
                 android:textColor="@color/green"
                 android:textSize="25dp"
-                android:visibility="gone"
+                android:visibility="visible"
                 app:layout_constraintTop_toBottomOf="@id/cart_RecyclerView"
                 app:layout_constraintStart_toStartOf="parent" />
 

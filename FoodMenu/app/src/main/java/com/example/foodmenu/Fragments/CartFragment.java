@@ -16,11 +16,16 @@ import android.widget.Toast;
 
 import com.example.foodmenu.App_Start.Session;
 import com.example.foodmenu.DataBaseHandler.CartHandler;
+import com.example.foodmenu.DataBaseHandler.DrinkHandler;
+import com.example.foodmenu.DataBaseHandler.FoodHandler;
 import com.example.foodmenu.DataBaseHandler.OnDataBindCompleteListener;
 import com.example.foodmenu.DataBaseHandler.OrderHandler;
 import com.example.foodmenu.Entity.CartItem;
 import com.example.foodmenu.Entity.Customer;
+import com.example.foodmenu.Entity.Drink;
+import com.example.foodmenu.Entity.Food;
 import com.example.foodmenu.R;
+import com.example.foodmenu.RecyclerViewAdapters.CartRecyclerViewAdapter;
 import com.example.foodmenu.Utils.FragmentUtils;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
@@ -35,7 +40,7 @@ public class CartFragment extends Fragment implements OnDataBindCompleteListener
     private Button order_Button, back_Button;
 
     private ArrayList<Integer> prices = new ArrayList<>();
-
+    private ArrayList<CartItem> cartItems = new ArrayList<>();
     public CartFragment() {}
 
     @Override
@@ -54,9 +59,10 @@ public class CartFragment extends Fragment implements OnDataBindCompleteListener
         CartHandler cartHandler = new CartHandler();
 
         if(Session.getUser().getId().contains(Customer.CODE)){
-            cartHandler.Bind_Data(
+            cartHandler.BindData(
                     Session.getUser().getId(),
-                    prices,
+                    cartItems,       // pass this
+                    prices,          // and this
                     cart_recyclerView,
                     getContext(),
                     this
@@ -75,9 +81,10 @@ public class CartFragment extends Fragment implements OnDataBindCompleteListener
 
         order_Button.setOnClickListener(v -> {
             if(order_Button.getText().equals("Done")){
-                totalPrice_TextView.setVisibility(View.VISIBLE);
-                setTotalPrice();
-                order_Button.setText("Order");
+//                totalPrice_TextView.setVisibility(View.VISIBLE);
+//                setTotalPrice();
+//                order_Button.setText("Order");
+                Order();
             }
             else if(order_Button.getText().equals("Order")){
                 Order();
@@ -136,7 +143,17 @@ public class CartFragment extends Fragment implements OnDataBindCompleteListener
 
     @Override
     public void onDataBindComplete() {
-        setTotalPrice();
-        Toast.makeText(getContext(), "complete", Toast.LENGTH_SHORT).show();
+        CartRecyclerViewAdapter adapter =
+                (CartRecyclerViewAdapter) cart_recyclerView.getAdapter();
+
+        if (adapter == null) return;
+
+        int total = 0;
+
+        for (Integer price : adapter.getItemTotals()) {
+            total += price;
+        }
+
+        totalPrice_TextView.setText("Total price: " + total);
     }
 }
